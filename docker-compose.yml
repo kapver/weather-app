@@ -26,7 +26,9 @@ services:
             - redis
             - mailpit
     pgsql:
-        image: 'postgres:17'
+        build:
+            context: .
+            dockerfile: docker/pgsql.Dockerfile
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
         environment:
