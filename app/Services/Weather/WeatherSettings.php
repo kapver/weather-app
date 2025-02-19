@@ -10,14 +10,17 @@ class WeatherSettings extends Settings
 {
     protected string $key = 'weather';
 
+    /**
+     * TODO need to investigate pop values meaning https://www.weather.gov/lmk/pops
+     */
     public function getDefaults(): array
     {
         return [
             'alert_enabled' => config('weather.alert', false),
             'average_enabled' => config('weather.average', false),
             'pause_enabled' => config('weather.paused_until', false),
-            'precipitation' => config('weather.precipitation', 10),
-            'uvi' => config('weather.uvi', 5),
+            'pop_threshold' => config('weather.pop_threshold', 0.5), // probability of precipitation
+            'uvi_threshold' => config('weather.uvi_threshold', 5),
         ];
     }
 }

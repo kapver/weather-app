@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->json('settings'); // Stores settings in JSON format
+            $table->jsonb('settings')->index();
         });
     }
 

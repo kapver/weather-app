@@ -22,7 +22,7 @@ class CitySeeder extends Seeder
 
         // "capital" field possible values: 'primary' - capital, 'admin' - state, 'minor' - county, '' - town
         $cityFilterFunc = function ($city) {
-            return app()->isProduction() || in_array($city['capital'], ['primary', 'admin']);
+            return app()->isProduction() || in_array($city['capital'], ['primary', 'admin', 'minor']);
         };
 
         collect($csv)
@@ -33,6 +33,7 @@ class CitySeeder extends Seeder
                     $latitude  = (float)$row['lat'];
                     $longitude = (float)$row['lng'];
                     return [
+                        'type' => $row['capital'],
                         'name' => $row['city'],
                         'country' => $row['country'],
                         'coordinates' => DB::raw("ST_SetSRID(ST_MakePoint($longitude, $latitude), 4326)"),

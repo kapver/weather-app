@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(City::class, 'user_city');
     }
+
+    public function getSettingsArrayAttribute()
+    {
+        return $this->settings?->settings;
+    }
 }
