@@ -1,5 +1,0 @@
-@component('mail::message')
-
-    !!!
-
-@endcomponent

@@ -49,7 +49,7 @@ class OpenMeteoSource extends WeatherSource
 
     protected function parseType(): string
     {
-        return $this->parseTemp() > 0
+        return $this->parseTemp() >= 0
             ? 'rain'
             : 'snow';
     }

@@ -60,10 +60,12 @@ class OpenWeatherSource extends WeatherSource
     protected function parseType(): string
     {
         $first = $this->parseValue('hourly.0');
+        $temp = $this->parseTemp();
+
         return ($this->parsePop() > 0)
             ? $first->snow
                 ? 'snow'
                 : ($first->rain ? 'rain' : '')
-            : '';
+            : ($temp > 0 ? 'rain' : 'snow');
     }
 }

@@ -35,10 +35,25 @@ class WeatherNotification extends Notification/* implements ShouldQueue*/
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $message = (new MailMessage)->view('emails.weather-alert', $this->data)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        $message = new MailMessage();
+        $message->greeting = "Hi, $notifiable->name!";
+
+        $citiesText = $this->data->keys()->join(', ', ' and ');
+        $message->line("You have alerts for the $citiesText.");
+
+        $this->data->each(function ($item, $city) use ($message) {
+            if ($item['pop'] > 0) {
+                $popText = "Precipitation in $city: " . $item['pop_text'] . " of " . $item['type'] . ".";
+                $message->line($popText);
+            }
+            if ($item['uvi'] > 0) {
+                $uviText = "UV Index in $city: " . $item['uvi_text'];
+                $message->line($uviText);
+            }
+        });
+
+        $message->action('Manage Alert Conditions', url('/'));
+        $message->line('Thank you for using our application!');
 
         return $message;
     }

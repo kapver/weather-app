@@ -102,11 +102,13 @@ class WeatherService
             $pop  = collect($sources)->pluck('pop')->$func();
             $uvi  = collect($sources)->pluck('uvi')->$func();
             $temp = collect($sources)->pluck('temp')->$func();
+            $type = collect($sources)->pluck('type')->first();
 
             return [
                 'pop'  => $pop,
                 'uvi'  => $uvi,
                 'temp' => $temp,
+                'type' => $type ?? $temp >= 0 ? 'rain' : 'snow',
                 'pop_text' => WeatherSource::getPopText($pop),
                 'uvi_text' => WeatherSource::getUviText($uvi),
             ];
