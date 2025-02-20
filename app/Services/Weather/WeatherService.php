@@ -81,20 +81,15 @@ class WeatherService
 
     private function sendNotifications(Collection $users, Collection $data): void
     {
-        // $count = 0;
-
-        $users->each(function ($user) use ($data/*, &$count*/) {
+        $users->each(function ($user) use ($data) {
             $cities_data = $data->only($user->cities->pluck('name'));
             $user_settings = (new WeatherSettings())->getSettings($user);
             $send_data = $this->getRelevantData($user_settings, $cities_data);
 
             if (!$send_data->isEmpty()) {
-                // $count++;
                 $user->notify(new WeatherNotification($send_data));
             }
         });
-
-        // dd($count);
     }
 
     private function getRelevantData(array $user_settings, Collection $cities_data): Collection

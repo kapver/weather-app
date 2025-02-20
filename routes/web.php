@@ -1,9 +1,14 @@
 <?php
 
+use App\Services\Weather\WeatherService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/alert', function (WeatherService $weatherService) {
+    $weatherService->process();
 });
 
 Route::middleware([

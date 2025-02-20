@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 
-class WeatherNotification extends Notification implements ShouldQueue
+class WeatherNotification extends Notification/* implements ShouldQueue*/
 {
     use Queueable;
 
@@ -35,10 +35,12 @@ class WeatherNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        $message = (new MailMessage)->view('emails.weather-alert', $this->data)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
+
+        return $message;
     }
 
     /**

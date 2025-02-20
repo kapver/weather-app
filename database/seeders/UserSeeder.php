@@ -10,18 +10,18 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::factory(1000)->create([
-            // 'name' => 'Test User',
-            // 'email' => 'test@weather.io',
+        $users = User::factory(1)->create([
+            'name' => 'Test User',
+            'email' => 'test@weather.io',
         ]);
 
         $users->each(function (User $user) {
             $cities_ids = City::query()
-                // ->whereIn('type', ['primary', 'admin'])
-                // ->where('country', 'Ukraine')
                 ->whereIn('name', ['Dubai', 'Kharkiv'])
                 ->inRandomOrder()
-                ->limit(2)
+                // ->whereIn('type', ['primary', 'admin'])
+                // ->where('country', 'Ukraine')
+                // ->limit(2)
                 ->pluck('id');
 
             $user->cities()->sync($cities_ids);
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                         "alert_enabled" => true,
                         "average_enabled" => true,
                         "pause_enabled" => false, // now()->toIso8601String()
-                        'pop_threshold' => -1,
+                        'pop_threshold' => -1, // default test value to be sure condition value pass threshold
                         'uvi_threshold' => -1,
                     ],
                 ],
