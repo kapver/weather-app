@@ -19,4 +19,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/user/settings', [\App\Http\Controllers\Livewire\UserSettingsController::class, 'show'])->name('settings.show');
 });

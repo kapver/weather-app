@@ -40,7 +40,6 @@ class WeatherService
     {
         return User::with('cities')->withWhereHas('settings', function ($query) {
             $query->whereRaw("(settings->'weather'->>'alert_enabled')::BOOLEAN = TRUE");
-            // $query->whereRaw("(settings->'weather'->>'pause_enabled' IS NULL OR (settings->'weather'->>'pause_enabled')::TIMESTAMP < CURRENT_TIMESTAMP)");
             $query->whereRaw("(settings->'weather'->>'pause_enabled' IS NULL OR (settings->'weather'->>'pause_enabled')::BOOLEAN = FALSE OR (settings->'weather'->>'pause_enabled')::TIMESTAMP < CURRENT_TIMESTAMP)");
         })->get();
     }
@@ -83,7 +82,7 @@ class WeatherService
     {
         $users->each(function ($user) use ($data) {
             $cities_data = $data->only($user->cities->pluck('name'));
-            $user_settings = (new WeatherSettings())->getSettings($user);
+            $user_settings = (new WeatherSettings($user))->getSettings();
             $send_data = $this->getRelevantData($user_settings, $cities_data);
 
             if (!$send_data->isEmpty()) {

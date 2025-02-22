@@ -21,6 +21,8 @@ class WeatherSettings extends Settings
             'pause_enabled' => config('weather.paused_until', false),
             'pop_threshold' => config('weather.pop_threshold', 0.5), // probability of precipitation
             'uvi_threshold' => config('weather.uvi_threshold', 5),
+            'email_enabled' => config('weather.email_enabled', true),
+            'telegram_enabled' => config('weather.telegram_enabled', false),
         ];
     }
 }
