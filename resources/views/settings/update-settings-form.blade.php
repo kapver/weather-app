@@ -17,7 +17,7 @@
 
         <!-- Pause Notifications Section -->
         <div class="col-span-4 sm:col-span-4">
-            @if (!$state['pause_enabled'])
+            @if (!$state['pause_enabled'] || $state['pause_enabled'] < now()->toDateTimeString())
                 <div>
                     <label for="dropdown">{{ __('Pause for ') }}</label>
                     <select id="dropdown" wire:model.live="state.pause_enabled" class="border rounded p-2">
@@ -51,7 +51,7 @@
             />
         </div>
 
-        <!-- Enable Notifications Section -->
+        <!-- Notifications channels -->
         <div class="col-span-4 sm:col-span-4">
             <div class="col-span-4 sm:col-span-4 flex items-center gap-2">
                 <x-input id="email_enabled" type="checkbox" wire:model.live="state.email_enabled"/>
@@ -59,9 +59,23 @@
                 <x-input-error for="email_enabled" class="mt-2"/>
             </div>
             <div class="col-span-4 sm:col-span-4 flex items-center gap-2">
-                <x-input id="telegram_enabled" type="checkbox" wire:model.live="state.telegram_enabled"/>
-                <x-label for="telegram_enabled" value="{{ __('Notify via telegram') }}"/>
-                <x-input-error for="telegram_enabled" class="mt-2"/>
+                @if($state['telegram_chat_id'])
+                    <x-input id="telegram_enabled" type="checkbox" wire:model.live="state.telegram_enabled"/>
+                    <x-label for="telegram_enabled" value="{{ __('Notify via telegram') }}"/>
+                    <x-input-error for="telegram_enabled" class="mt-2"/>
+
+                    <x-button wire:click.prevent="unlinkTelegram">
+                        {{ __('Unlink Telegram') }}
+                    </x-button>
+                @else
+                    @php
+                        $telegram_link = "https://t.me/UpdaterAppBot?start={$state['telegram_verification_code']}";
+                    @endphp
+
+                    <x-button type="button" onclick="window.open('{{ $telegram_link }}', '_blank')">
+                        {{ __('Link Telegram') }}
+                    </x-button>
+                @endif
             </div>
         </div>
 

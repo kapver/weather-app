@@ -20,6 +20,7 @@ class Select extends Component
 
     public function search(string $term): void
     {
+        $term = strtolower($term);
         $results = City::query()->whereRaw('LOWER(name) like ?', ["%{$term}%"])
             ->where('type', 'primary')
             ->limit(100)

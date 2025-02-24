@@ -23,6 +23,11 @@ abstract class Settings
         return array_merge($this->getDefaults(), $saved);
     }
 
+    public function getSetting(string $key): mixed
+    {
+        return $this->getSettings()[$key] ?? null;
+    }
+
     public function saveSettings(array $updated): void
     {
         $settings = $this->user->settings ?? new UserSetting();

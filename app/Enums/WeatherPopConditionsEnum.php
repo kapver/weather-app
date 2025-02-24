@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum WeatherPopConditionsEnum: int
 {
+    case PopAny = -1;
     case PopLow = 20;
     case PopModerate = 50;
     case PopHigh = 80;
@@ -12,6 +13,7 @@ enum WeatherPopConditionsEnum: int
     public static function getOptions(): array
     {
         return [
+            self::PopAny->value => 'Any probability',
             self::PopLow->value => 'Low probability (less than 20%)',
             self::PopModerate->value => 'Moderate probability (20% - 50%)',
             self::PopHigh->value => 'High probability (50% - 80%)',

@@ -36,11 +36,17 @@ class WeatherService
         })->unique('id');
     }
 
+    /**
+     * Retrieves users to send weather notifications
+     * TODO move to repository
+     *
+     * @return Collection
+     */
     private function getUsers(): Collection
     {
         return User::with('cities')->withWhereHas('settings', function ($query) {
             $query->whereRaw("(settings->'weather'->>'alert_enabled')::BOOLEAN = TRUE");
-            $query->whereRaw("(settings->'weather'->>'pause_enabled' IS NULL OR (settings->'weather'->>'pause_enabled')::BOOLEAN = FALSE OR (settings->'weather'->>'pause_enabled')::TIMESTAMP < CURRENT_TIMESTAMP)");
+            $query->whereRaw("(settings->'weather'->>'pause_enabled' IS NULL OR (settings->'weather'->>'pause_enabled')::TIMESTAMP < CURRENT_TIMESTAMP)");
         })->get();
     }
 
@@ -93,32 +99,39 @@ class WeatherService
 
     private function getRelevantData(array $user_settings, Collection $cities_data): Collection
     {
-        $func = $user_settings['average_enabled']
+        $func = $user_settings['average_enabled'] // global or per user setting?
             ? 'avg'
             : 'max';
 
-        $data = $cities_data->map(function ($sources) use($func) {
+        return $cities_data->map(function ($sources) use($func, $user_settings) {
             $pop  = collect($sources)->pluck('pop')->$func();
             $uvi  = collect($sources)->pluck('uvi')->$func();
             $temp = collect($sources)->pluck('temp')->$func();
             $type = collect($sources)->pluck('type')->first();
 
-            return [
-                'pop'  => $pop,
-                'uvi'  => $uvi,
+            $popAlert = $pop > $user_settings['pop_threshold'];
+            $uviAlert = $uvi > $user_settings['uvi_threshold'];
+
+            if (!$popAlert && !$uviAlert) {
+                return [];
+            }
+
+            $data = [
                 'temp' => $temp,
                 'type' => $type ?? $temp >= 0 ? 'rain' : 'snow',
-                'pop_text' => WeatherSource::getPopText($pop),
-                'uvi_text' => WeatherSource::getUviText($uvi),
             ];
-        });
 
-        // filter by user's conditions threshold
-        return $data->filter(function ($cityData) use($user_settings) {
-            $popAlert = $cityData['pop'] > $user_settings['pop_threshold'];
-            $uviAlert = $cityData['uvi'] > $user_settings['uvi_threshold'];
+            if ($pop > $user_settings['pop_threshold']) {
+                $data['pop'] = $pop;
+                $data['pop_text'] = WeatherSource::getPopText($pop);
+            }
 
-            return $popAlert || $uviAlert;
-        });
+            if ($uvi > $user_settings['uvi_threshold']) {
+                $data['uvi']  = $uvi;
+                $data['uvi_text'] = WeatherSource::getUviText($uvi);
+            }
+
+            return $data;
+        })->filter();
     }
 }

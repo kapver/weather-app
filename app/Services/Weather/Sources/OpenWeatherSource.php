@@ -16,7 +16,7 @@ class OpenWeatherSource extends WeatherSource
         $API_KEY = env('OPEN_WEATHER_API_KEY');
 
         if (empty($API_KEY)) {
-            throw new \Exception('API Key not set');
+            throw new \Exception('OPEN_WEATHER_API_KEY is empty');
         }
 
         $query_string = http_build_query([

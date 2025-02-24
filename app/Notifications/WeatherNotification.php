@@ -2,11 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
+use NotificationChannels\Telegram\TelegramMessage;
 
 class WeatherNotification extends Notification/* implements ShouldQueue*/
 {
@@ -27,35 +29,49 @@ class WeatherNotification extends Notification/* implements ShouldQueue*/
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return $notifiable->notificationChannels ?? ['mail'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(User $notifiable): MailMessage
     {
+        $citiesText = $this->data->keys()->join(', ', ' and ');
+
         $message = new MailMessage();
+        $message->subject = "Weather notification for $citiesText";
         $message->greeting = "Hi, $notifiable->name!";
 
-        $citiesText = $this->data->keys()->join(', ', ' and ');
-        $message->line("You have alerts for the $citiesText.");
+        $message->line("You have alerts for $citiesText.");
 
         $this->data->each(function ($item, $city) use ($message) {
-            if ($item['pop'] > 0) {
-                $popText = "Precipitation in $city: " . $item['pop_text'] . " of " . $item['type'] . ".";
-                $message->line($popText);
-            }
-            if ($item['uvi'] > 0) {
-                $uviText = "UV Index in $city: " . $item['uvi_text'];
-                $message->line($uviText);
-            }
+            $message->line('-- ' . $city);
+            $message->lineIf(isset($item['pop']), "Precipitation of {$item['type']}: {$item['pop_text']}.");
+            $message->lineIf(isset($item['uvi']), "UV Index: {$item['uvi_text']}.");
         });
 
-        $message->action('Manage Alert Conditions', url('/'));
+        $message->action('Manage Alert Conditions', route('settings.show'));
         $message->line('Thank you for using our application!');
 
         return $message;
+    }
+
+    public function toTelegram(User $notifiable): TelegramMessage
+    {
+        $chat_id = data_get($notifiable->settings, 'settings.weather.telegram_chat_id');
+
+        $content = view('emails.weather.telegram')->with('cities', $this->data)->render();
+
+        // exit($content);
+
+        return TelegramMessage::create($content)
+            ->to($chat_id)
+            // ->view('email.weather.telegram')
+            ->options([
+                'parse_mode' => 'HTML', // Enables Telegram to parse HTML
+                'disable_web_page_preview' => true,
+            ]);
     }
 
     /**

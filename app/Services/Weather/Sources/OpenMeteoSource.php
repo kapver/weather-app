@@ -16,7 +16,7 @@ class OpenMeteoSource extends WeatherSource
         $query_string = http_build_query([
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-            'hourly' => 'temperature_2m,precipitation_probability,precipitation,uv_index',
+            'hourly' => 'temperature_2m,precipitation_probability,precipitation,uv_index,uv_index_clear_sky',
             'wind_speed_unit' => 'ms',
             'timeformat' => 'unixtime',
             'timezone' => 'auto',
@@ -29,7 +29,14 @@ class OpenMeteoSource extends WeatherSource
 
     protected function parsePop(): float
     {
-        return (float) last($this->parseValue('hourly.precipitation_probability'));
+        $value = (float) last($this->parseValue('hourly.precipitation_probability'));
+
+        // Convert percents 5% to decimal 0.05
+        if ($value > 1) {
+            $value = $value / 100;
+        }
+
+        return $value;
     }
 
     protected function parseUvi(): float

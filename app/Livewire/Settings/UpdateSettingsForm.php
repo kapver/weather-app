@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Settings;
 
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Illuminate\View\View;
 use Livewire\WithFileUploads;
@@ -39,6 +40,14 @@ class UpdateSettingsForm extends Component
         $cities = auth()->user()->cities;
 
         $this->state = $weatherSettings->getSettings();
+
+        if (!$this->state['telegram_chat_id']) {
+            $this->state['telegram_verification_code'] = Str::ulid()->toString();
+            $weatherSettings->saveSettings([
+                'telegram_verification_code' => $this->state['telegram_verification_code'],
+            ]);
+        }
+
         $this->cities_selected = $cities->pluck('id')->toArray();
         $this->cities_options = $cities->map(fn($item) => [
             'label' => $item->name,
@@ -70,7 +79,8 @@ class UpdateSettingsForm extends Component
     public function updatedState(WeatherSettings $weatherSettings, mixed $value, string $key): void
     {
         if ($key === 'pause_enabled') {
-            $this->state['pause_enabled'] = now()->nowWithSameTz()->addHours($value);
+            $timestamp = now()->addHours((int) $value)->toDateTimeString();
+            $this->state['pause_enabled'] = $timestamp;
         }
         $weatherSettings->saveSettings($this->state);
         Log::info('Updated state:', ['state' => $this->state]);
@@ -81,6 +91,16 @@ class UpdateSettingsForm extends Component
     {
         $this->state['pause_enabled'] = null;
         $weatherSettings->saveSettings($this->state);
+        $this->dispatch('saved');
+    }
+
+    public function unlinkTelegram(WeatherSettings $weatherSettings): void
+    {
+        $this->state['telegram_enabled'] = false;
+        $this->state['telegram_chat_id'] = null;
+        $this->state['telegram_verification_code'] = null;
+        $weatherSettings->saveSettings($this->state);
+        $this->dispatch('saved');
     }
 
     /**

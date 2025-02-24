@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
                     "weather" => [
                         "alert_enabled" => true,
                         "average_enabled" => true,
-                        "pause_enabled" => false, // now()->toIso8601String()
+                        "pause_enabled" => null,
                         'pop_threshold' => -1, // default test value to be sure condition value pass threshold
                         'uvi_threshold' => -1,
                     ],

@@ -85,4 +85,23 @@ class User extends Authenticatable
     {
         return $this->settings?->settings;
     }
+
+    public function getNotificationChannelsAttribute(): array
+    {
+        $channels = [];
+
+        $email_enabled = data_get($this->settings, 'settings.weather.email_enabled');
+        $telegram_enabled = data_get($this->settings, 'settings.weather.telegram_enabled');
+        $telegram_chat_id = data_get($this->settings, 'settings.weather.telegram_chat_id');
+
+        if ($email_enabled) {
+            $channels[] = 'mail';
+        }
+
+        if ($telegram_enabled && $telegram_chat_id) {
+            $channels[] = 'telegram';
+        }
+
+        return $channels;
+    }
 }

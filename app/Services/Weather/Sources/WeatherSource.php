@@ -31,7 +31,7 @@ abstract class WeatherSource implements WeatherSourceInterface
 
     protected function fetchData(): void
     {
-        $ttl = 3600;
+        $ttl = 1800;
         $url = $this->getUrl();
         $key = $this->getName() . '_' . crc32($url);
 
