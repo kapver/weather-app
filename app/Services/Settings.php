@@ -30,7 +30,8 @@ abstract class Settings
 
     public function saveSettings(array $updated): void
     {
-        $settings = $this->user->settings ?? new UserSetting();
+        $settings = $this->user->settings()->firstOrNew();
+
         $settings->settings = array_merge($settings->settings ?? [], [
             $this->key => array_merge($settings->settings[$this->key] ?? [], $updated)
         ]);

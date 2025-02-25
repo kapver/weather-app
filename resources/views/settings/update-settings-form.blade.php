@@ -46,8 +46,8 @@
             <livewire:settings.select
                     id="cities"
                     :options="$cities_options"
-                    :selected="$cities_selected"
-                    wire:model="cities_selected"
+                    :selected="$cities"
+                    wire:model="cities"
             />
         </div>
 

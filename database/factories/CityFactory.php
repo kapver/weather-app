@@ -21,6 +21,7 @@ class CityFactory extends Factory
         $longitude = fake()->longitude();
 
         return [
+            'type' => 'primary',
             'name' => $this->faker->city,
             'country' => $this->faker->country,
             'coordinates' => [$longitude, $latitude],

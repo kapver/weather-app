@@ -26,33 +26,25 @@ class UpdateSettingsForm extends Component
      */
     public array $state = [];
 
-    public array $cities_options = [];
-
-    public array $cities_selected = [];
+    public array $cities = [];
 
     /**
      * Prepare the component.
      *
+     * @param WeatherSettings $weatherSettings
      * @return void
      */
     public function mount(WeatherSettings $weatherSettings): void
     {
-        $cities = auth()->user()->cities;
-
         $this->state = $weatherSettings->getSettings();
 
-        if (!$this->state['telegram_chat_id']) {
-            $this->state['telegram_verification_code'] = Str::ulid()->toString();
-            $weatherSettings->saveSettings([
-                'telegram_verification_code' => $this->state['telegram_verification_code'],
-            ]);
+        if (!$this->state['telegram_verification_code']) {
+            $code = Str::ulid()->toString();
+            $this->state['telegram_verification_code'] = $code;
+            $weatherSettings->saveSettings(['telegram_verification_code' => $code]);
         }
 
-        $this->cities_selected = $cities->pluck('id')->toArray();
-        $this->cities_options = $cities->map(fn($item) => [
-            'label' => $item->name,
-            'value' => $item->id
-        ])->toArray();
+        $this->cities = auth()->user()->cities->pluck('id')->toArray();
     }
 
     /**
@@ -62,8 +54,13 @@ class UpdateSettingsForm extends Component
     {
         $this->resetErrorBag();
 
+        if ($this->state['pause_enabled']) {
+            $timestamp = now()->addHours((int) $this->state['pause_enabled'])->toDateTimeString();
+            $this->state['pause_enabled'] = $timestamp;
+        }
+
         $weatherSettings->saveSettings($this->state);
-        auth()->user()->cities()->sync($this->cities_selected);
+        auth()->user()->cities()->sync($this->cities);
 
         $this->dispatch('saved');
     }
@@ -76,21 +73,24 @@ class UpdateSettingsForm extends Component
      * @param string $key
      * @return void
      */
-    public function updatedState(WeatherSettings $weatherSettings, mixed $value, string $key): void
+    public function updatedState(WeatherSettings $weatherSettings, mixed $value, ?string $key): void
     {
         if ($key === 'pause_enabled') {
             $timestamp = now()->addHours((int) $value)->toDateTimeString();
             $this->state['pause_enabled'] = $timestamp;
         }
+
         $weatherSettings->saveSettings($this->state);
-        Log::info('Updated state:', ['state' => $this->state]);
+
         $this->dispatch('saved');
     }
 
     public function resumeNotifications(WeatherSettings $weatherSettings): void
     {
         $this->state['pause_enabled'] = null;
+
         $weatherSettings->saveSettings($this->state);
+
         $this->dispatch('saved');
     }
 
@@ -99,7 +99,9 @@ class UpdateSettingsForm extends Component
         $this->state['telegram_enabled'] = false;
         $this->state['telegram_chat_id'] = null;
         $this->state['telegram_verification_code'] = null;
+
         $weatherSettings->saveSettings($this->state);
+
         $this->dispatch('saved');
     }
 
@@ -110,10 +112,16 @@ class UpdateSettingsForm extends Component
      */
     public function render(): View
     {
+        $cities_options = auth()->user()->cities->map(fn($item) => [
+            'label' => $item->name,
+            'value' => $item->id
+        ])->toArray();
+
         return view('settings.update-settings-form')->with([
             'pause_options' => WeatherPauseConditionEnum::getOptions(),
             'pop_options' => WeatherPopConditionsEnum::getOptions(),
             'uvi_options' => WeatherUviConditionsEnum::getOptions(),
+            'cities_options' => $cities_options,
         ]);
     }
 }
