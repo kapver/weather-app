@@ -36,36 +36,4 @@ class OpenWeatherSource extends WeatherSource
         // another forecast way is 5 days forecast with 3 hours step
         // return "https://api.openweathermap.org/data/2.5/forecast?$query_string";
     }
-
-    protected function parsePop(): float
-    {
-        return (float) $this->parseValue('hourly.0.pop');
-    }
-
-    protected function parseUvi(): float
-    {
-        return (float) $this->parseValue('hourly.0.uvi');
-    }
-
-    protected function parseTemp(): float
-    {
-        return (float) $this->parseValue('hourly.0.temp');
-    }
-
-    protected function parseTime(): int
-    {
-        return (int) $this->parseValue('hourly.0.dt');
-    }
-
-    protected function parseType(): string
-    {
-        $first = $this->parseValue('hourly.0');
-        $temp = $this->parseTemp();
-
-        return ($this->parsePop() > 0)
-            ? $first->snow
-                ? 'snow'
-                : ($first->rain ? 'rain' : '')
-            : ($temp > 0 ? 'rain' : 'snow');
-    }
 }

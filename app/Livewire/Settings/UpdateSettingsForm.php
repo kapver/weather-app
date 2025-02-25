@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Settings;
 
+use App\Services\Weather\WeatherService;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Illuminate\View\View;
@@ -63,6 +64,13 @@ class UpdateSettingsForm extends Component
         auth()->user()->cities()->sync($this->cities);
 
         $this->dispatch('saved');
+    }
+
+    public function testNotifications(WeatherService $weatherService): void
+    {
+        $weatherService->process();
+
+        $this->dispatch('sent');
     }
 
     /**

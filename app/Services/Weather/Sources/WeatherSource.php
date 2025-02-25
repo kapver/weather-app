@@ -10,8 +10,6 @@ use Illuminate\Support\Str;
 
 abstract class WeatherSource implements WeatherSourceInterface
 {
-    protected mixed $responseData;
-
     public function __construct(
         protected float $latitude,
         protected float $longitude,
@@ -25,69 +23,26 @@ abstract class WeatherSource implements WeatherSourceInterface
         $this->longitude = $coordinates[1] ?? $this->longitude;
         $this->city = $city ?? $this->city;
 
-        $this->fetchData();
-        return $this->parseData();
+        return $this->resolveParser()->parse($this->fetchData());
     }
 
-    protected function fetchData(): void
+    public function fetchData()
     {
-        $ttl = 1800;
+        $res = '';
         $url = $this->getUrl();
-        $key = $this->getName() . '_' . crc32($url);
-
-        $body = '';
+        $key = $this->getKey($url);
 
         if (Cache::has($key)) {
-            $body = Cache::get($key);
+            $res = Cache::get($key);
         } else {
             $response = Http::get($url);
             if ($response->status() === 200) {
-                $body = $response->getBody()->getContents();
-                Cache::put($key, $body, $ttl);
+                $res = $response->getBody()->getContents();
+                Cache::put($key, $res, 1800);
             }
         }
 
-        $this->responseData = json_decode($body, false);
-    }
-
-    protected function parseData(): array
-    {
-        return [
-            'time' => $this->parseTime(),
-            'temp' => $this->parseTemp(),
-            'uvi'  => $this->parseUvi(),
-            'pop'  => $this->parsePop(),
-            'type' => $this->parseType(),
-        ];
-    }
-
-    protected function parseValue($key, $default = null)
-    {
-        return data_get($this->responseData, $key, $default);
-    }
-
-    public static function getUviText(mixed $uvi): string
-    {
-        /**
-         * TODO Need to clarify API documentation about values
-         */
-        return match (true) {
-            $uvi < 2 => 'Low (minimal risk)',
-            $uvi < 6 => 'Moderate (use protection)',
-            $uvi < 8 => 'High (shade, sunscreen)',
-            $uvi < 11 => 'Very High (extra protection needed)',
-            default => 'Extreme (avoid sun exposure)',
-        };
-    }
-
-    public static function getPopText(mixed $pop): string
-    {
-        return match (true) {
-            $pop <= 0.2 => 'Low probability (less than 20%)',
-            $pop <= 0.5 => 'Moderate probability (20% - 50%)',
-            $pop <= 0.8 => 'High probability (50% - 80%)',
-            default => 'Very high probability (above 80%)',
-        };
+        return $res;
     }
 
     public function getName(): string
@@ -95,15 +50,22 @@ abstract class WeatherSource implements WeatherSourceInterface
         return Str::snake(class_basename($this));
     }
 
+    public function getKey(string $url): string
+    {
+        return $this->getName() . '_' . crc32($url);
+
+    }
+
+    protected function resolveParser(): ?WeatherParser
+    {
+        $className = class_basename(static::class);
+        $parserName = str_replace('Source', 'Parser', $className);
+        $parserClass = __NAMESPACE__ . '\\' . $parserName;
+
+        return class_exists($parserClass)
+            ? new $parserClass()
+            : null;
+    }
+
     abstract protected function getUrl(): string;
-
-    abstract protected function parsePop(): float;
-
-    abstract protected function parseUvi(): float;
-
-    abstract protected function parseTemp(): float;
-
-    abstract protected function parseTime(): int;
-
-    abstract protected function parseType(): string;
 }

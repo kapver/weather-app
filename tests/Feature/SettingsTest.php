@@ -27,6 +27,7 @@ class SettingsTest extends TestCase
     public function test_settings_can_be_updated(): void
     {
         $pause_hours = 5;
+        // TODO consider use minutes to avoid 1 second mismatch
         $paused_until = now()->addHours($pause_hours)->toDateTimeString();
 
         $expected = [

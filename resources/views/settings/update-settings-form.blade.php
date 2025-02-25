@@ -13,6 +13,9 @@
             <x-input id="alert_enabled" type="checkbox" wire:model.live="state.alert_enabled"/>
             <x-label for="alert_enabled" value="{{ __('Enable notifications') }}"/>
             <x-input-error for="alert_enabled" class="mt-2"/>
+            <x-button wire:click.prevent="testNotifications">
+                {{ __('Test') }}
+            </x-button>
         </div>
 
         <!-- Pause Notifications Section -->
@@ -108,7 +111,11 @@
             {{ __('Saved.') }}
         </x-action-message>
 
-        <x-button wire:loading.attr="disabled" wire:target="photo">
+        <x-action-message class="me-3" on="sent">
+            {{ __('Notification sent.') }}
+        </x-action-message>
+
+        <x-button wire:loading.attr="disabled">
             {{ __('Save') }}
         </x-button>
     </x-slot>

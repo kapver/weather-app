@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Weather;
 
 use App\Models\User;
+use App\Enums\WeatherPopConditionsEnum;
+use App\Enums\WeatherUviConditionsEnum;
 use App\Notifications\WeatherNotification;
 use App\Services\Weather\Sources\OpenMeteoSource;
 use App\Services\Weather\Sources\OpenWeatherSource;
-use App\Services\Weather\Sources\WeatherApiSource;
-use App\Services\Weather\Sources\WeatherSource;
+
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class WeatherService
 {
-    protected array $dataSources = [
+    protected static array $dataSources = [
         OpenWeatherSource::class,
-        // WeatherApiSource::class,
         OpenMeteoSource::class,
     ];
 
@@ -24,6 +26,7 @@ class WeatherService
         $users = $this->getUsers();
         $cities = $this->getCities($users);
         $info = $this->getInfo($cities);
+
         $this->sendNotifications($users, $info);
     }
 
@@ -34,6 +37,11 @@ class WeatherService
                 return $city;
             });
         })->unique('id');
+    }
+
+    public static function getSources(): array
+    {
+        return self::$dataSources;
     }
 
     /**
@@ -55,7 +63,7 @@ class WeatherService
         return $cities->mapWithKeys(function ($city) {
             $city_data = [];
 
-            foreach ($this->dataSources as $dataSourceClass) {
+            foreach (self::$dataSources as $dataSourceClass) {
                 if (!class_exists($dataSourceClass)) {
                     Log::error(__CLASS__ . ' data source class "' . $dataSourceClass . '" not found');
                     continue;
@@ -123,12 +131,12 @@ class WeatherService
 
             if ($pop > $user_settings['pop_threshold']) {
                 $data['pop'] = $pop;
-                $data['pop_text'] = WeatherSource::getPopText($pop);
+                $data['pop_text'] = WeatherPopConditionsEnum::getText($pop);
             }
 
             if ($uvi > $user_settings['uvi_threshold']) {
                 $data['uvi']  = $uvi;
-                $data['uvi_text'] = WeatherSource::getUviText($uvi);
+                $data['uvi_text'] = WeatherUviConditionsEnum::getText($uvi);
             }
 
             return $data;

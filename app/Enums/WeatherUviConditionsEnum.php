@@ -22,4 +22,18 @@ enum WeatherUviConditionsEnum: int
             self::UviUltraHigh->value => 'Ultra high (extreme risk)',
         ];
     }
+
+    public static function getText(mixed $uvi): string
+    {
+        /**
+         * TODO Need to clarify API documentation about values
+         */
+        return match (true) {
+            $uvi < 2 => 'Low (minimal risk)',
+            $uvi < 6 => 'Moderate (use protection)',
+            $uvi < 8 => 'High (shade, sunscreen)',
+            $uvi < 11 => 'Very High (extra protection needed)',
+            default => 'Extreme (avoid sun exposure)',
+        };
+    }
 }
