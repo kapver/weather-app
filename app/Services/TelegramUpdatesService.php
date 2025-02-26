@@ -24,7 +24,7 @@ class TelegramUpdatesService
         }
 
         $json = json_encode($response['result']);
-        Log::debug(__METHOD__, ['updates' => $json]);
+
         Cache::put('telegram_updates_' . microtime(), $json);
 
         foreach ($response['result'] as $update) {

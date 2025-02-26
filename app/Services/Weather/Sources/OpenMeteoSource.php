@@ -11,7 +11,7 @@ namespace App\Services\Weather\Sources;
  */
 class OpenMeteoSource extends WeatherSource
 {
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         $query_string = http_build_query([
             'latitude' => $this->latitude,

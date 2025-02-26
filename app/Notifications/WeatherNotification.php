@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\Telegram\TelegramMessage;
 
 class WeatherNotification extends Notification implements ShouldQueue
@@ -20,6 +21,12 @@ class WeatherNotification extends Notification implements ShouldQueue
     public function __construct(
         private readonly array|Collection $data
     ) {
+        Log::debug('Notification data: ', [$this->data]);
+    }
+
+    public function getData(): array|Collection
+    {
+        return $this->data;
     }
 
     /**
@@ -29,6 +36,8 @@ class WeatherNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
+        Log::debug('Notification via: ', [$notifiable->notificationChannels]);
+
         return $notifiable->notificationChannels ?? ['mail'];
     }
 

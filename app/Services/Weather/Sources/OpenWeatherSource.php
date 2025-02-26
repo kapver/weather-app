@@ -11,7 +11,7 @@ namespace App\Services\Weather\Sources;
  */
 class OpenWeatherSource extends WeatherSource
 {
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         $API_KEY = env('OPEN_WEATHER_API_KEY');
 

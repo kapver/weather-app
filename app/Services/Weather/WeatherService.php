@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Weather;
 
 use App\Models\User;
-use App\Enums\WeatherPopConditionsEnum;
-use App\Enums\WeatherUviConditionsEnum;
 use App\Notifications\WeatherNotification;
+use App\Repositories\UserRepositoryInterface;
 use App\Services\Weather\Sources\OpenMeteoSource;
 use App\Services\Weather\Sources\OpenWeatherSource;
 
@@ -21,22 +20,22 @@ class WeatherService
         OpenMeteoSource::class,
     ];
 
+    public function __construct(private UserRepositoryInterface $userRepository)
+    {
+    }
+
     public function process(): void
     {
-        $users = $this->getUsers();
+        $users = $this->userRepository->getUsersForWeatherNotifications();
         $cities = $this->getCities($users);
         $info = $this->getInfo($cities);
 
         $this->sendNotifications($users, $info);
     }
 
-    private function getCities(Collection $users): Collection
+    public function getCities(Collection $users): Collection
     {
-        return $users->flatMap(function ($user) {
-            return $user->cities->map(function ($city) {
-                return $city;
-            });
-        })->unique('id');
+        return $users->flatMap(fn ($user) => $user->cities)->unique('id');
     }
 
     public static function getSources(): array
@@ -44,21 +43,7 @@ class WeatherService
         return self::$dataSources;
     }
 
-    /**
-     * Retrieves users to send weather notifications
-     * TODO move to repository
-     *
-     * @return Collection
-     */
-    private function getUsers(): Collection
-    {
-        return User::with('cities')->withWhereHas('settings', function ($query) {
-            $query->whereRaw("(settings->'weather'->>'alert_enabled')::BOOLEAN = TRUE");
-            $query->whereRaw("(settings->'weather'->>'pause_enabled' IS NULL OR (settings->'weather'->>'pause_enabled')::TIMESTAMP < CURRENT_TIMESTAMP)");
-        })->get();
-    }
-
-    private function getInfo(Collection $cities): Collection
+    public function getInfo(Collection $cities): Collection
     {
         return $cities->mapWithKeys(function ($city) {
             $city_data = [];
@@ -96,50 +81,12 @@ class WeatherService
     {
         $users->each(function ($user) use ($data) {
             $cities_data = $data->only($user->cities->pluck('name'));
-            $user_settings = (new WeatherSettings($user))->getSettings();
-            $send_data = $this->getRelevantData($user_settings, $cities_data);
+            $user_settings = new WeatherSettings($user)->getSettings();
+            $send_data = WeatherDataFilter::getRelevantData($user_settings, $cities_data);
 
             if (!$send_data->isEmpty()) {
                 $user->notify(new WeatherNotification($send_data));
             }
         });
-    }
-
-    private function getRelevantData(array $user_settings, Collection $cities_data): Collection
-    {
-        $func = $user_settings['average_enabled'] // global or per user setting?
-            ? 'avg'
-            : 'max';
-
-        return $cities_data->map(function ($sources) use($func, $user_settings) {
-            $pop  = collect($sources)->pluck('pop')->$func();
-            $uvi  = collect($sources)->pluck('uvi')->$func();
-            $temp = collect($sources)->pluck('temp')->$func();
-            $type = collect($sources)->pluck('type')->first();
-
-            $popAlert = $pop > $user_settings['pop_threshold'];
-            $uviAlert = $uvi > $user_settings['uvi_threshold'];
-
-            if (!$popAlert && !$uviAlert) {
-                return [];
-            }
-
-            $data = [
-                'temp' => $temp,
-                'type' => $type ?? $temp >= 0 ? 'rain' : 'snow',
-            ];
-
-            if ($pop > $user_settings['pop_threshold']) {
-                $data['pop'] = $pop;
-                $data['pop_text'] = WeatherPopConditionsEnum::getText($pop);
-            }
-
-            if ($uvi > $user_settings['uvi_threshold']) {
-                $data['uvi']  = $uvi;
-                $data['uvi_text'] = WeatherUviConditionsEnum::getText($uvi);
-            }
-
-            return $data;
-        })->filter();
     }
 }

@@ -6,6 +6,7 @@ namespace App\Services\Weather\Sources;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 abstract class WeatherSource implements WeatherSourceInterface
@@ -58,14 +59,12 @@ abstract class WeatherSource implements WeatherSourceInterface
 
     protected function resolveParser(): ?WeatherParser
     {
-        $className = class_basename(static::class);
-        $parserName = str_replace('Source', 'Parser', $className);
-        $parserClass = __NAMESPACE__ . '\\' . $parserName;
+        $parserClass = preg_replace('/Source$/', 'Parser', static::class);
 
         return class_exists($parserClass)
             ? new $parserClass()
             : null;
     }
 
-    abstract protected function getUrl(): string;
+    abstract public function getUrl(): string;
 }

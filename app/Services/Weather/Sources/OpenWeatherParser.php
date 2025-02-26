@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Weather\Sources;
 
+use Illuminate\Support\Facades\Log;
+
 class OpenWeatherParser extends WeatherParser
 {
     public function parsePop(): float
@@ -31,10 +33,13 @@ class OpenWeatherParser extends WeatherParser
         $first = $this->parseValue('hourly.0');
         $temp = $this->parseTemp();
 
+        $hasSnowAttr = $first->snow ?? false;
+        $hasRainAttr = $first->rain ?? false;
+
         return ($this->parsePop() > 0)
-            ? $first->snow
+            ? $hasSnowAttr
                 ? 'snow'
-                : ($first->rain ? 'rain' : '')
+                : ($hasRainAttr ? 'rain' : '')
             : ($temp > 0 ? 'rain' : 'snow');
     }
 }

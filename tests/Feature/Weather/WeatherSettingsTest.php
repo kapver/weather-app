@@ -1,19 +1,17 @@
 <?php
 
-namespace Feature;
+namespace Tests\Feature\Weather;
 
-use App\Services\Weather\WeatherSettings;
-use Livewire\Livewire;
-use Illuminate\Support\Str;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use App\Models\User;
-use App\Models\City;
 use App\Livewire\Settings\UpdateSettingsForm;
-
+use App\Models\City;
+use App\Models\User;
+use App\Services\Weather\WeatherSettings;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Tests\TestCase;
 
-class SettingsTest extends TestCase
+class WeatherSettingsTest extends TestCase
 {
     use RefreshDatabase;
 

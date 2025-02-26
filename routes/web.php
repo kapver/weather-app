@@ -1,14 +1,10 @@
 <?php
 
-use App\Services\Weather\WeatherService;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Livewire\UserSettingsController;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/alert', function (WeatherService $weatherService) {
-    $weatherService->process();
 });
 
 Route::middleware([
@@ -20,5 +16,5 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/user/settings', [\App\Http\Controllers\Livewire\UserSettingsController::class, 'show'])->name('settings.show');
+    Route::get('/user/settings', [UserSettingsController::class, 'show'])->name('settings.show');
 });
