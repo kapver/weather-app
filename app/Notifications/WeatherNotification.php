@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class WeatherNotification extends Notification/* implements ShouldQueue*/
+class WeatherNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -60,14 +60,10 @@ class WeatherNotification extends Notification/* implements ShouldQueue*/
     public function toTelegram(User $notifiable): TelegramMessage
     {
         $chat_id = data_get($notifiable->settings, 'settings.weather.telegram_chat_id');
-
         $content = view('emails.weather.telegram')->with('cities', $this->data)->render();
-
-        // exit($content);
 
         return TelegramMessage::create($content)
             ->to($chat_id)
-            // ->view('email.weather.telegram')
             ->options([
                 'parse_mode' => 'HTML', // Enables Telegram to parse HTML
                 'disable_web_page_preview' => true,
