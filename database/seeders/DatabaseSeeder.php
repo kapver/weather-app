@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        City::count() === 0 && User::count() === 0 && $this->call([
+        !City::count() && !User::count() && $this->call([
             CitySeeder::class,
             UserSeeder::class,
         ]);
