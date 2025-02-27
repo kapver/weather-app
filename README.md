@@ -21,11 +21,19 @@
    Open your browser and navigate to:  
    [http://127.0.0.1:8001](http://127.0.0.1:8001)
 
+
 5. **Update User Settings**  
    You can configure your preferred weather conditions and notification settings by navigating to:  
    [http://127.0.0.1:8001/user/settings](http://127.0.0.1:8001/user/settings)
    ![Settings Screenshot](public/images/settings.png)
-**Test User Account:**  
+
+
+6. **Check Emails Sent with Mailpit**  
+   You can view any emails sent by the service by navigating to:  
+   [http://localhost:8025/](http://localhost:8025/)
+
+
+7. **Test User Account:**  
 You can log in using the following credentials:
 
 - **Email:** test@weather.io
