@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Weather;
 
 use App\Services\Settings;
-use Illuminate\Support\Str;
 
 class WeatherSettings extends Settings
 {

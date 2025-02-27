@@ -11,6 +11,12 @@ namespace App\Services\Weather\Sources;
  */
 class OpenWeatherSource extends WeatherSource
 {
+    /**
+     * Generate the URL for fetching weather data
+     *
+     * @return string
+     * @throws \Exception
+     */
     public function getUrl(): string
     {
         $API_KEY = env('OPEN_WEATHER_API_KEY');
@@ -20,13 +26,13 @@ class OpenWeatherSource extends WeatherSource
         }
 
         $query_string = http_build_query([
-            'lat' => $this->latitude,
-            'lon' => $this->longitude,
-            'appid' => $API_KEY,
+            'lat'     => $this->latitude,
+            'lon'     => $this->longitude,
+            'appid'   => $API_KEY,
             'exclude' => 'current,minutely,daily', // alerts,hourly
-            'units' => 'metric',
+            'units'   => 'metric',
             // 'mode' => 'json',
-            'lang' => 'en',
+            'lang'    => 'en',
             // 'cnt' => 1,
         ]);
 

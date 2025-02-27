@@ -15,6 +15,11 @@ class UserRepository implements UserRepositoryInterface
         $this->query = User::query();
     }
 
+    /**
+     * Get a collection of users eligible for weather notifications.
+     *
+     * @return Collection
+     */
     public function getUsersForWeatherNotifications(): Collection
     {
         return $this->query->with('cities')

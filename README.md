@@ -21,6 +21,10 @@
    Open your browser and navigate to:  
    [http://127.0.0.1:8001](http://127.0.0.1:8001)
 
+5. **Update User Settings**  
+   You can configure your preferred weather conditions and notification settings by navigating to:  
+   [http://127.0.0.1:8001/user/settings](http://127.0.0.1:8001/user/settings)
+   ![Settings Screenshot](public/images/settings.png)
 **Test User Account:**  
 You can log in using the following credentials:
 

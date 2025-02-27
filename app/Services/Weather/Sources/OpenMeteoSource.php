@@ -11,17 +11,22 @@ namespace App\Services\Weather\Sources;
  */
 class OpenMeteoSource extends WeatherSource
 {
+    /**
+     * Generate the URL for fetching weather data.
+     *
+     * @return string
+     */
     public function getUrl(): string
     {
         $query_string = http_build_query([
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'hourly' => 'temperature_2m,precipitation_probability,precipitation,uv_index,uv_index_clear_sky',
+            'latitude'        => $this->latitude,
+            'longitude'       => $this->longitude,
+            'hourly'          => 'temperature_2m,precipitation_probability,precipitation,uv_index,uv_index_clear_sky',
             'wind_speed_unit' => 'ms',
-            'timeformat' => 'unixtime',
-            'timezone' => 'auto',
-            'forecast_days' => '1',
-            'forecast_hours' => '2',
+            'timeformat'      => 'unixtime',
+            'timezone'        => 'auto',
+            'forecast_days'   => '1',
+            'forecast_hours'  => '2',
         ]);
 
         return "https://api.open-meteo.com/v1/forecast?$query_string";

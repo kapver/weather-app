@@ -18,6 +18,11 @@ class UserSetting extends Model
     protected $fillable = ['user_id', 'settings'];
     protected $casts = ['settings' => 'array'];
 
+    /**
+     * Get the user that owns the setting.
+     *
+     * @return BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

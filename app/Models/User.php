@@ -67,30 +67,50 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
+    /**
+     * Get the associated user settings.
+     *
+     * @return HasOne
+     */
     public function settings(): HasOne
     {
         return $this->hasOne(UserSetting::class);
     }
 
+    /**
+     * Get the cities that belong to the user.
+     *
+     * @return BelongsToMany
+     */
     public function cities(): BelongsToMany
     {
         return $this->belongsToMany(City::class, 'user_city');
     }
 
+    /**
+     * Get the settings as an array.
+     *
+     * @return array|null
+     */
     public function getSettingsArrayAttribute()
     {
         return $this->settings?->settings;
     }
 
+    /**
+     * Get the notification channels for the user.
+     *
+     * @return array<int, string>
+     */
     public function getNotificationChannelsAttribute(): array
     {
         $channels = [];
 
-        $email_enabled = data_get($this->settings, 'settings.weather.email_enabled');
+        $email_enabled    = data_get($this->settings, 'settings.weather.email_enabled');
         $telegram_enabled = data_get($this->settings, 'settings.weather.telegram_enabled');
         $telegram_chat_id = data_get($this->settings, 'settings.weather.telegram_chat_id');
 
