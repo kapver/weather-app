@@ -1,2 +1,23 @@
 ## Weather Notification Service
 
+### Steps to Run the Service
+
+1. **Clone the project**
+   ```bash
+   git clone https://github.com/kapver/weather-app.git
+   ```
+
+2. **Install dependencies and start the service**
+   ```bash
+   chmod +x ./install.sh && ./install.sh
+   ```
+
+3. **Preview the application**  
+   Open your browser and navigate to:  
+   [http://127.0.0.1:8001](http://127.0.0.1:8001)
+
+> **Note:** The host machine is assumed to lack PHP and Composer, so a workaround is implemented under the hood.
+
+---
+
+Tested on **macOS 15.3.1**

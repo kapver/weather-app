@@ -7,4 +7,7 @@ docker run --rm -v $(pwd):/opt -w /opt laravelsail/php84-composer:latest pwd && 
   php artisan key:generate --ansi
 
 # Start Sail services
-./vendor/bin/sail up --build
+./vendor/bin/sail up --build -d
+#./vendor/bin/sail artisan migrate --seed
+#./vendor/bin/sail npm install
+#./vendor/bin/sail npm run build

@@ -15,6 +15,7 @@ fi
 
 chmod -R ugo+rw /.composer
 
+### faster than run in install.sh through sail command - macOs issue
 /usr/bin/php artisan migrate --seed
 /usr/bin/npm install
 /usr/bin/npm run build
