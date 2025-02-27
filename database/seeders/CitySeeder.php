@@ -11,13 +11,13 @@ class CitySeeder extends Seeder
 {
     public function run(): void
     {
-        $csvPath = 'cities.csv';
+        $csvPath = base_path('database/fixtures/cities.csv');
 
-        if (!Storage::exists($csvPath)) {
+        if (!file_exists($csvPath)) {
             return;
         }
 
-        $csv = Reader::createFromPath(Storage::path($csvPath), 'r');
+        $csv = Reader::createFromPath($csvPath);
         $csv->setHeaderOffset(0);
 
         // "capital" field possible values: 'primary' - capital, 'admin' - state, 'minor' - county, '' - town
