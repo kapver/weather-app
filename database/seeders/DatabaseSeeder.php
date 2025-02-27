@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\City;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 
@@ -13,7 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
+
+        City::count() === 0 && User::count() === 0 && $this->call([
             CitySeeder::class,
             UserSeeder::class,
         ]);

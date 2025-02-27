@@ -15,6 +15,10 @@ fi
 
 chmod -R ugo+rw /.composer
 
+/usr/bin/php artisan migrate --seed
+/usr/bin/npm install
+/usr/bin/npm run build
+
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
         exec "$@"

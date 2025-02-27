@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\City;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -13,6 +14,7 @@ class UserSeeder extends Seeder
         $users = User::factory(1)->create([
             'name' => 'Test User',
             'email' => 'test@weather.io',
+            'password' => Hash::make('111'),
         ]);
 
         $users->each(function (User $user) {
@@ -31,6 +33,7 @@ class UserSeeder extends Seeder
                     "weather" => [
                         "alert_enabled" => true,
                         "average_enabled" => true,
+                        "email_enabled" => true,
                         "pause_enabled" => null,
                         'pop_threshold' => -1, // default test value to be sure condition value pass threshold
                         'uvi_threshold' => -1,
