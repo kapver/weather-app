@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire\Settings;
 
-use App\Services\Weather\WeatherService;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Log;
 
 use App\Enums\WeatherPopConditionsEnum;
 use App\Enums\WeatherUviConditionsEnum;
 use App\Enums\WeatherPauseConditionEnum;
+use App\Services\Weather\WeatherService;
 use App\Services\Weather\WeatherSettings;
 
 class UpdateSettingsForm extends Component
@@ -27,6 +26,11 @@ class UpdateSettingsForm extends Component
      */
     public array $state = [];
 
+    /**
+     * List of user's cities
+     *
+     * @var array
+     */
     public array $cities = [];
 
     /**
@@ -49,7 +53,7 @@ class UpdateSettingsForm extends Component
     }
 
     /**
-     * Updates the user's settings
+     * Updates user's weather settings
      */
     public function updateWeatherSettings(WeatherSettings $weatherSettings): void
     {
@@ -66,6 +70,12 @@ class UpdateSettingsForm extends Component
         $this->dispatch('saved');
     }
 
+    /**
+     * Sends notification if meet conditions
+     *
+     * @param WeatherService $weatherService
+     * @return void
+     */
     public function testNotifications(WeatherService $weatherService): void
     {
         $weatherService->process();
@@ -78,7 +88,7 @@ class UpdateSettingsForm extends Component
      *
      * @param WeatherSettings $weatherSettings
      * @param mixed $value
-     * @param string $key
+     * @param ?string $key
      * @return void
      */
     public function updatedState(WeatherSettings $weatherSettings, mixed $value, ?string $key): void
@@ -102,6 +112,12 @@ class UpdateSettingsForm extends Component
         $this->dispatch('saved');
     }
 
+    /**
+     * Removes association with telegram notification chat
+     *
+     * @param WeatherSettings $weatherSettings
+     * @return void
+     */
     public function unlinkTelegram(WeatherSettings $weatherSettings): void
     {
         $this->state['telegram_enabled'] = false;

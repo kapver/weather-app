@@ -11,4 +11,4 @@ Artisan::command('inspire', function () {
 Schedule::command('weather:alert')->hourly();
 
 // TODO should be a webhook implementation
-Schedule::command('telegram:get-updates')->everyMinute();
+Schedule::command('telegram:get-updates')->everyTwentySeconds();

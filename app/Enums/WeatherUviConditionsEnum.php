@@ -25,9 +25,6 @@ enum WeatherUviConditionsEnum: int
 
     public static function getText(mixed $uvi): string
     {
-        /**
-         * TODO Need to clarify API documentation about values
-         */
         return match (true) {
             $uvi < 2 => 'Low (minimal risk)',
             $uvi < 6 => 'Moderate (use protection)',

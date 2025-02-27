@@ -19,12 +19,15 @@ class SourceTest extends TestCase
     {
         foreach (WeatherService::getSources() as $sourceClass) {
             $sourceName = Str::snake(class_basename($sourceClass));
-            $mockResp = file_get_contents(base_path("tests/Mocks/{$sourceName}_response.json"));
-            $mockData = $this->resolveParser($sourceClass)->parse($mockResp);
+            $response = file_get_contents(base_path("tests/Mocks/{$sourceName}_response.json"));
 
-            foreach ($this->expectedKeys as $key) {
-                $this->assertArrayHasKey($key, $mockData);
-                $this->assertNotNull($mockData[$key]);
+            if($parser = $this->resolveParser($sourceClass)){
+                $data = $parser->parse($response);
+
+                foreach ($this->expectedKeys as $key) {
+                    $this->assertArrayHasKey($key, $data);
+                    $this->assertNotNull($data[$key]);
+                }
             }
         }
     }

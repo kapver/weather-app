@@ -15,6 +15,21 @@ fi
 
 chmod -R ugo+rw /.composer
 
+## Copy .env.example to .env if .env doesn't exist
+#if [ ! -f ".env" ]; then
+#    cp .env.example .env
+#    echo "OPEN_WEATHER_API_KEY=b27fe017a904f53329c36241dba72bfd" >> .env
+#    echo "TELEGRAM_BOT_NAME=weatherBotV1" >> .env
+#    echo "TELEGRAM_BOT_TOKEN=7773493736:AAFLHsu45M3TQQkHZsrAXCaSuILjo1bXqFA" >> .env
+#fi
+
+## Run setup steps only if composer dependencies are not installed
+#if [ ! -f "vendor/autoload.php" ]; then
+#    composer install --optimize-autoloader --no-dev
+#    php artisan key:generate --ansi
+#    php artisan migrate --force
+#fi
+
 if [ $# -gt 0 ]; then
     if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
         exec "$@"

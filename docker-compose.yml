@@ -9,7 +9,7 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
-            - '${APP_PORT:-8001}:80'
+            - '${APP_PORT:-8000}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
             WWWUSER: '${WWWUSER}'
@@ -28,7 +28,7 @@ services:
     pgsql:
         build:
             context: .
-            dockerfile: docker/pgsql.Dockerfile
+            dockerfile: docker/pgsql/Dockerfile
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
         environment:

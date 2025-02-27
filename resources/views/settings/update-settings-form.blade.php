@@ -16,6 +16,7 @@
             <x-button wire:click.prevent="testNotifications">
                 {{ __('Test') }}
             </x-button>
+            - set conditions to Any
         </div>
 
         <!-- Pause Notifications Section -->
@@ -46,7 +47,7 @@
         <!-- Cities Dropdown -->
         <div class="col-span-4 sm:col-span-4">
             <label for="cities">{{ __('Alert for ') }}</label>
-            <livewire:settings.select
+            <livewire:components.city-combobox
                     id="cities"
                     :options="$cities_options"
                     :selected="$cities"

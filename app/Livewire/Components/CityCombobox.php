@@ -1,23 +1,35 @@
 <?php
 
-namespace App\Livewire\Settings;
+namespace app\Livewire\Components;
 
 use App\Models\City;
+use Illuminate\View\View;
 use Livewire\Attributes\Modelable;
 use Livewire\Component;
 
-class Select extends Component
+class CityCombobox extends Component
 {
+    /**
+     * The list of options available in the combobox.
+     *
+     * @var array
+     */
     public $options = [];
 
+    /**
+     * The list of selected option values.
+     *
+     * @var array
+     */
     #[Modelable]
     public $selected = [];
-
-    public function render()
-    {
-        return view('livewire.select');
-    }
-
+    
+    /**
+     * Search for cities based on the provided term and update the options.
+     *
+     * @param string $term The search term input.
+     * @return void
+     */
     public function search(string $term): void
     {
         $term = strtolower($term);
@@ -40,5 +52,16 @@ class Select extends Component
             ->unique();
 
         $this->dispatch('select-options-updated', $this->options);
+    }
+    
+
+    /**
+     * Render the CityCombobox component view.
+     *
+     * @return View
+     */
+    public function render(): View
+    {
+        return view('livewire.components.city-combobox');
     }
 }

@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-LABEL maintainer="Taylor Otwell"
+LABEL maintainer="Pavlo Kliahin"
 
 ARG WWWGROUP
 ARG NODE_VERSION=22
@@ -55,9 +55,6 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Install supervisor-web using pip
-#RUN pip3 install supervisor-web
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 
